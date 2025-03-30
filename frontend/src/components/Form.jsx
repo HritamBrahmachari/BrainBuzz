@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import logo from "../assets/logo.jpg"; // ✅ Correct relative path// Adjust path as needed
 import { useNavigate } from 'react-router-dom';
 
-import  useAuthStore  from '../components/Store';
+import useAuthStore from '../components/Store';
 import axios from 'axios'; // ✅ Import axios
 
 
@@ -16,6 +15,7 @@ function Form() {
     const name = useAuthStore((state) => state.name);
     const email = useAuthStore((state) => state.email);
     const password = useAuthStore((state) => state.password);
+    const apiUrl = useAuthStore((state) => state.apiUrl); // Get API URL from store
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
@@ -24,7 +24,7 @@ function Form() {
     const handlesignup = async (e) => {
         e.preventDefault();
         try {
-       const response = await axios.post('http://localhost:5000/signup', { // ✅ Await response
+       const response = await axios.post(`${apiUrl}/signup`, { // Use apiUrl from store
             
             name,
             email,

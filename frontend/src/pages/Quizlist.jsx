@@ -9,12 +9,13 @@ const Quizlist = () => {
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
   const setSelectedQuiz = useAuthStore((state) => state.setSelectedQuiz);
+  const apiUrl = useAuthStore((state) => state.apiUrl);
 
   useEffect(() => {
     const fetchQuizList = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:5000/quiz");
+        const response = await axios.get(`${apiUrl}/quiz`);
         console.log(response.data);
         setQuizzes(response.data);
       } catch (error) {
@@ -25,7 +26,7 @@ const Quizlist = () => {
     };
 
     fetchQuizList();
-  }, []);
+  }, [apiUrl]);
 
   const handleTakeQuiz = (quiz) => {
     // Store the selected quiz in the global state and navigate to quiz page

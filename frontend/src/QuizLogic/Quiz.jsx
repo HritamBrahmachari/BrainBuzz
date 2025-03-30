@@ -28,6 +28,9 @@ const QuizApp = () => {
   const optionsCount = useAuthStore((state) => state.optionsCount);
   const questionCount = useAuthStore((state) => state.questionCount);
   const quizName = useAuthStore((state) => state.quizName);
+  
+  // Get API URL from store
+  const apiUrl = useAuthStore((state) => state.apiUrl);
 
   // Fetch AI-generated quiz
   const fetchAIQuiz = async () => {
@@ -115,7 +118,7 @@ const QuizApp = () => {
             throw new Error('Category is required');
         }
 
-          axios.post("http://localhost:5000/quiz", {
+          axios.post(`${apiUrl}/quiz`, {
             quizName: quizName,
             questions: parsedQuiz,
             categories: categories,
@@ -175,7 +178,7 @@ const QuizApp = () => {
         } 
         // Otherwise fetch it from the API
         else if (id) {
-          const response = await axios.get(`http://localhost:5000/quiz/${id}`);
+          const response = await axios.get(`${apiUrl}/quiz/${id}`);
           setQuiz(response.data);
           setSelectedAnswers(Array(response.data.questions.length).fill(null));
         } else {
@@ -196,7 +199,7 @@ const QuizApp = () => {
     };
 
     fetchQuizData();
-  }, [id, selectedQuiz, navigate]);
+  }, [id, selectedQuiz, navigate, apiUrl]);
 
   // Timer for each question
   useEffect(() => {

@@ -1,4 +1,3 @@
-
 import logo from "../assets/logo.jpg";
 import { useNavigate } from 'react-router-dom';
 import  useAuthStore  from '../components/Store'; // ✅ Import Zustand store
@@ -8,6 +7,7 @@ function Login () {
     const setEmail = useAuthStore((state) => state.setEmail); // ✅ Import setEmail function from Zustand store 
     const setPassword = useAuthStore((state) => state.setPassword);
     const setName = useAuthStore((state) => state.setName); // ✅ Import setPassword function from Zustand store
+    const apiUrl = useAuthStore((state) => state.apiUrl); // Import apiUrl from the store
 
     const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn); // ✅ Import setIsLoggedIn function from Zustand store
     
@@ -22,7 +22,7 @@ function Login () {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/login', { email, password });
+            const response = await axios.post(`${apiUrl}/login`, { email, password });
 
             if (response.data.token) {
                 setToken(response.data.token);

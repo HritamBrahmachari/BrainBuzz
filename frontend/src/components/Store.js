@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 
+// Use environment variable for API URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const useAuthStore = create((set) => ({
+    // API base URL for all requests
+    apiUrl: API_URL,
+    
     name: '',
     setName: (name) => set({ name: name }),
     email: '',
