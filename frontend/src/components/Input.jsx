@@ -1,32 +1,58 @@
-import { useState } from "react";
-import Next from "./Next";
-import useAuthStore from "../components/Store"; // Import Zustand store
+import { useState } from 'react';
+import Next from './Next';
+import useAuthStore from '../components/Store';
 
 const Input = () => {
-  const [category, setCategory] = useState("");
-  const { categories, setCategories } = useAuthStore(); // Zustand state
+  const [inputCategory, setInputCategory] = useState(""); // Local state for input field
+  const { categories, setCategories, quizName, setQuizName } = useAuthStore();
 
-  const handleAddCategory = () => {
-    if (category.trim() !== "" && categories.length < 4) {
-      setCategories([...categories, category]); // Save to Zustand store
-      setCategory("");
+  const handleAddCategory = (e) => {
+    if (e) e.preventDefault();
+    if (inputCategory.trim() !== '') {
+      setCategories([...categories, inputCategory.trim()]);
+      setInputCategory(''); // Clear local input state
+    }
+  };
+  const handleAddName = (e) => {
+    if (e) e.preventDefault();
+    if (quizName.trim() !== '') {
+      setQuizName(quizName.trim());
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddCategory();
     }
   };
 
   const handleRemoveCategory = (index) => {
-    setCategories(categories.filter((_, i) => i !== index)); // Update Zustand store
+    setCategories(categories.filter((_, i) => i !== index));
   };
 
   return (
     <form onSubmit={(e) => e.preventDefault()} className="max-w-md px-4 mx-auto mt-12">
-      <h1 className="text-indigo-600 font-medium text-center">CHOOSE UP TO 4 CATEGORIES</h1>
-
       <div className="relative flex flex-wrap gap-2 mt-4">
-        {/* Input field */}
         <input
           type="text"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          value={quizName}
+          onChange={(e) => setQuizName(e.target.value)}
+          placeholder="Enter Quiz Name (optional)"
+          className="flex-1 py-3 pl-4 pr-12 text-gray-500 border rounded-md outline-none bg-gray-50 focus:bg-white focus:border-indigo-600"
+        />
+        <button
+          type="button"
+          className="px-4 py-2 text-white bg-indigo-600 rounded-md"
+          onClick={handleAddName}
+        >
+          Save
+        </button>
+        <input
+          type="text"
+          value={inputCategory}
+          onChange={(e) => setInputCategory(e.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder="Select Category"
           className="flex-1 py-3 pl-4 pr-12 text-gray-500 border rounded-md outline-none bg-gray-50 focus:bg-white focus:border-indigo-600"
         />
@@ -39,7 +65,6 @@ const Input = () => {
         </button>
       </div>
 
-      {/* Display categories as tags */}
       <div className="flex flex-wrap gap-2 mt-4">
         {categories.map((c, index) => (
           <span key={index} className="flex items-center gap-2 px-3 py-1 text-white bg-indigo-600 rounded-md">
@@ -50,9 +75,7 @@ const Input = () => {
           </span>
         ))}
       </div>
-      <br>
-      </br>
-
+      <br />
       <Next />
     </form>
   );

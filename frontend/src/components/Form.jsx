@@ -4,30 +4,55 @@ import logo from "../assets/logo.jpg"; // ✅ Correct relative path// Adjust pat
 import { useNavigate } from 'react-router-dom';
 
 import  useAuthStore  from '../components/Store';
+import axios from 'axios'; // ✅ Import axios
 
 
 function Form() {
-    const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+    const setName = useAuthStore((state) => state.setName);
+    const setEmail = useAuthStore((state) => state.setEmail);
+    const setPassword = useAuthStore((state) => state.setPassword);
+    const setToken = useAuthStore((state) => state.setToken);
+    const setUserData = useAuthStore((state) => state.setUserData);
+    const name = useAuthStore((state) => state.name);
+    const email = useAuthStore((state) => state.email);
+    const password = useAuthStore((state) => state.password);
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
         navigate('/login');
     };
-    const handlesignup = (e) => {
+    const handlesignup = async (e) => {
         e.preventDefault();
-        setIsLoggedIn(true);
-      navigate('/');
-      
-    
+        try {
+       const response = await axios.post('http://localhost:5000/signup', { // ✅ Await response
+            
+            name,
+            email,
+            password
+    })
+    if (response.data.token) {
+        setToken(response.data.token);
+        setUserData({ name });
+        navigate('/');
+    }
 
     }
+    catch (error) {
+        console.error(error);
+    }
+    }   
 
     return (
         <>
         <main className="w-full h-screen flex flex-col items-center justify-center bg-gray-50 sm:px-4">
             <div className="w-full space-y-6 text-gray-600 sm:max-w-md">
                 <div className="text-center">
-                    <img src={logo} width={150} className="mx-auto" />
+                <div className="ml-2 flex justify-center">
+                                <span className="text-4xl font-bold text-indigo-600">Brain</span>
+                                <span className="text-4xl font-bold text-gray-700">Buzz</span>
+                                <span className="ml-1 text-xs font-medium text-indigo-400 align-top">QUIZ</span>
+                            </div>
+                            <br></br>
                     <div className="mt-5 space-y-2">
                         <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Create an account</h3>
                         <p className="">Already have an account? <a href="javascript:void(0)" className="font-medium text-indigo-600 hover:text-indigo-500" onClick={handleLoginClick}>Log in</a></p>
@@ -47,6 +72,8 @@ function Form() {
                             <input
                                 type="text"
                                 required
+                                placeholder="Enter your name"
+                                onChange={(e) => setName(e.target.value)} // ✅ Set name in Zustand store
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
                             />
                         </div>
@@ -57,6 +84,8 @@ function Form() {
                             <input
                                 type="email"
                                 required
+                                placeholder="Enter your email"
+                                onChange={(e) => setEmail(e.target.value)} // ✅ Set email in Zustand store
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
                             />
                         </div>
@@ -67,6 +96,8 @@ function Form() {
                             <input
                                 type="password"
                                 required
+                                placeholder="Enter your password"
+                                onChange={(e) => setPassword(e.target.value)} // ✅ Set password in Zustand store
                                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
                             />
                         </div>

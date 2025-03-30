@@ -1,21 +1,48 @@
 
 import logo from "../assets/logo.jpg";
 import { useNavigate } from 'react-router-dom';
-function Login () {
+import  useAuthStore  from '../components/Store'; // ✅ Import Zustand store
+import axios from 'axios';
 
+function Login () { 
+    const setEmail = useAuthStore((state) => state.setEmail); // ✅ Import setEmail function from Zustand store 
+    const setPassword = useAuthStore((state) => state.setPassword);
+    const setName = useAuthStore((state) => state.setName); // ✅ Import setPassword function from Zustand store
+
+    const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn); // ✅ Import setIsLoggedIn function from Zustand store
+    
+    const email = useAuthStore((state) => state.email); // ✅ Import email from Zustand store
+    const password = useAuthStore((state) => state.password);
+    const setToken = useAuthStore((state) => state.setToken);
+    const setUserData = useAuthStore((state) => state.setUserData); // ✅ Import password from Zustand store
     const navigate = useNavigate();
     function handlesignupClick() {
         navigate('/signup');
     }
 
-    function mainpage() {
-        navigate('/');
-    }
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post('http://localhost:5000/login', { email, password });
+
+            if (response.data.token) {
+                setToken(response.data.token);
+                setUserData({ name: response.data.name });
+                navigate('/');  // Redirect after login
+            }
+        } catch (error) {
+            console.error("Login failed", error);
+        }
+    };
     return (
         <main className="w-full h-screen flex flex-col items-center justify-center px-4">
             <div className="max-w-sm w-full text-gray-600 space-y-5">
                 <div className="text-center pb-8">
-                    <img src={logo} width={150} className="mx-auto" />
+                <div className="ml-2 flex justify-center">
+                                <span className="text-4xl font-bold text-indigo-600">Brain</span>
+                                <span className="text-4xl font-bold text-gray-700">Buzz</span>
+                                <span className="ml-1 text-xs font-medium text-indigo-400 align-top">QUIZ</span>
+                            </div>
+                            <br></br>
                     <div className="mt-5">
                         <h3 className="text-gray-800 text-2xl font-bold sm:text-3xl">Log in to your account</h3>
                     </div>
@@ -31,6 +58,7 @@ function Login () {
                         <input
                             type="email"
                             required
+                            onChange={(e) => setEmail(e.target.value)} // ✅ Set email in Zustand store
                             className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
                         />
                     </div>
@@ -41,6 +69,7 @@ function Login () {
                         <input
                             type="password"
                             required
+                            onChange={(e) => setPassword(e.target.value)} // ✅ Set password in Zustand store
                             className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
                         />
                     </div>
@@ -58,7 +87,7 @@ function Login () {
                     </div>
                     <button
                         className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
-                    onClick={mainpage}>
+                    onClick={handleLogin}> 
                         Sign in
                     </button>
                 </form>

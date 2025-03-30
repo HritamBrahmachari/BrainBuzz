@@ -1,10 +1,50 @@
 import { create } from 'zustand';
 
 const useAuthStore = create((set) => ({
+    name: '',
+    setName: (name) => set({ name: name }),
+    email: '',
+    setEmail: (email) => set({ email: email }),
+    password: '',
+    setPassword: (password) => set({ password: password }),
     // Authentication state
-    isloggedin: false,
-    setIsLoggedIn: (status) => set({ isloggedin: status }),
+    token: null,
+    isLoggedIn: false,
+    setIsLoggedIn: (status) => set({ isLoggedIn: status }),
+    setToken: (token) => {
+        if (token) {
+            localStorage.setItem('token', token);
+        } else {
+            localStorage.removeItem('token');
+        }
+        set({ token, isLoggedIn: !!token });
+    },
+    setUserData: (data) => {
+        if (data) {
+            localStorage.setItem('userData', JSON.stringify(data));
+            set({ name: data.name, isLoggedIn: true });
+        }
+    },
+    initFromStorage: () => {
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('userData');
+        if (token && userData) {
+            const parsedUserData = JSON.parse(userData);
+            set({ 
+                token,
+                name: parsedUserData.name,
+                isLoggedIn: true
+            });
+        }
+    },
+    logout: () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userData');
+        set({ token: null, isLoggedIn: false, name: '' });
+    },
 
+    inviteLink: '',
+    setInviteLink: (link) => set({ inviteLink: link }),
     // Step management
     stepsItems: ["Category", "Difficulty", "Customise", "Review"],
     currentStep: 1,
@@ -18,7 +58,12 @@ const useAuthStore = create((set) => ({
 
     // Categories
     categories: [],
-    setCategories: (newCategories) => set({ categories: newCategories }), 
+    setCategories: (newCategories) => set({ categories: newCategories }),
+    quizName: '',
+    setQuizName: (name) => set({ quizName: name }),
+    removeCategory: (category) => set((state) => ({
+        categories: state.categories.filter((c) => c !== category)
+    })),
 
     // Difficulty Level
     difficulty: "Medium",
@@ -34,6 +79,22 @@ const useAuthStore = create((set) => ({
     timePerQuestion: 60,
     setTimePerQuestion: (time) => set({ timePerQuestion: time }),
 
+    // Selected Quiz for taking the quiz
+    selectedQuiz: null,
+    setSelectedQuiz: (quiz) => set({ selectedQuiz: quiz }),
+    
+    // Quiz Results
+    quizResults: {
+        totalQuestions: 0,
+        correctAnswers: 0,
+        score: 0,
+        userAnswers: [],
+        
+    },
+    setQuizResults: (results) => set({ quizResults: results }),
+    updateQuizResults: (partialResults) => set((state) => ({
+        quizResults: { ...state.quizResults, ...partialResults }
+    })),
 }));
 
 export default useAuthStore;

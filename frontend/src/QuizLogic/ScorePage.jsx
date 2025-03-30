@@ -2,14 +2,15 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import Nav from '../components/Nav';
+import useAuthStore from '../components/Store';
 
 const ScorePage = () => {
-  const location = useLocation();
+ 
   const navigate = useNavigate();
 
   // Retrieve score details from navigate state:
   // { score: number, total: number, correct: number }
-  const { score, total, correct } = location.state || {};
+  const { totalQuestions: total,  correctAnswers: correct, score } = useAuthStore((state) => state.quizResults);
 
   // If score details aren't provided, ask user to take the quiz first
   if (score === undefined || total === undefined || correct === undefined) {

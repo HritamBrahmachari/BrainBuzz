@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import useAuthStore from './components/Store';
 
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import Login from './components/Login';
@@ -6,13 +7,19 @@ import Form from './components/Form';
 import Pages from './pages/Pages';
 import Pricing from './pages/Pricing';
 import Nav from './components/Nav';
-import Sidebar from './pages/Sidebar';
+
 import Steps from './pages/Steps';
 import QuizApp from './QuizLogic/Quiz';
 import ScorePage from './QuizLogic/ScorePage';
+import Quizlist from './pages/Quizlist';
+import Logout from './components/Logout';
 
 const App = () => {
+    const initFromStorage = useAuthStore(state => state.initFromStorage);
 
+    useEffect(() => {
+        initFromStorage();
+    }, [initFromStorage]);
    
     return (
         <Router>
@@ -21,12 +28,16 @@ const App = () => {
             
                 <Route path="/signup" element={<Form />} />
                 <Route path="/login" element={<Login />} />
-               <Route path="/" element={<Pages/>} />
-               <Route path="/pricing" element={<Pricing/>}/>
-               <Route path="/profile" element={<Sidebar/>}/>
-               <Route path="/Steps" element={<Steps/>}/>
-               <Route path="/quiz" element={<QuizApp/>}/>
-               <Route path="/score" element={<ScorePage/>}/>
+                <Route path="/" element={<Pages/>} />
+                <Route path="/pricing" element={<Pricing/>}/>
+                
+                <Route path="/Steps" element={<Steps/>}/>
+                <Route path="/quiz" element={<QuizApp/>}/>
+                <Route path="/quiz/:id" element={<QuizApp/>}/>
+                <Route path="/score" element={<ScorePage/>}/>
+                <Route path="/quizlist" element={<Quizlist/>}/>
+                <Route path="/Logout" element={<Logout/>}/>
+              
                
             </Routes>
             
