@@ -21,7 +21,7 @@
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB
 - **Containerization**: Docker, Docker Compose
-- **Deployment**: Netlify (Frontend), Heroku (Backend)
+- **Deployment**: Netlify (Frontend), Vercel (Backend)
 
 ---
 
