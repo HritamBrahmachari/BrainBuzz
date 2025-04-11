@@ -17,7 +17,7 @@
 ---
 🛠️ Tech Stack
 
-- **Frontend**: React.js, HTML5, CSS3
+- **Frontend**: React.js, HTML5, CSS3, Zustand
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB
 - **Containerization**: Docker, Docker Compose
