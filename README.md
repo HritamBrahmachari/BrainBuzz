@@ -52,10 +52,14 @@
    JWT_SECRET=your_jwt_secret
    ```
 
-3. **Run with Docker Compose**
+3. **Run with Bun**
 
    ```bash
-   docker-compose up --build
+   npm i
+   //frontend
+   Bun dev
+   //backend
+   nodemon server.js
    ```
 
    This command will build and start both the frontend and backend services.
