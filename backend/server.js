@@ -39,6 +39,31 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("brainbuzzsignup", UserSchema);
 
+// Middleware for JWT Authentication
+const authenticateToken = async (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+    if (token == null) return res.sendStatus(401); // if there isn't any token
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // Find user by email decoded from token and attach user ID to request
+        const user = await User.findOne({ email: decoded.email });
+        if (!user) {
+             // Return 401 if user associated with token not found
+            return res.status(401).json({ message: "User associated with token not found" });
+        }
+        req.user = { id: user._id }; // Attach user ID to the request object
+        next();
+    } catch (err) {
+        console.error("JWT Verification Error:", err);
+         // Return 401 if token verification fails (e.g., expired, invalid)
+        return res.status(401).json({ message: "Invalid or expired token" });
+    }
+};
+
+
 // Routes
 app.post('/signup', async (req, res) => {
     const { name, email, password } = req.body;
@@ -79,9 +104,11 @@ app.get('/invitecode', (req, res) => {
 
 });
 
-app.post("/quiz", async (req, res) => {
+// Apply authentication middleware to quiz creation route
+app.post("/quiz", authenticateToken, async (req, res) => {
     try {
-        const { quizName, questions, categories, optionsCount, questionCount, difficulty, timePerQuestion } = req.body;
+        let { quizName, questions, categories, optionsCount, questionCount, difficulty, timePerQuestion } = req.body; // Use let for quizName
+        const createdBy = req.user.id; // Get user ID from authenticated request
 
         // Validate required fields
         if (!quizName || !questions || !Array.isArray(questions)) {
@@ -134,7 +161,8 @@ app.post("/quiz", async (req, res) => {
             optionsCount,
             questionCount,
             difficulty,
-            timePerQuestion
+            timePerQuestion,
+            createdBy // Add the creator's ID
         });
 
         await quiz.save();
@@ -152,10 +180,34 @@ app.post("/quiz", async (req, res) => {
     }
 });
 
-app.get('/quiz', async (req, res) => {
-    const quiz = await Quiz.find();
-    res.json(quiz);
+// This route should be public - remove authenticateToken middleware
+app.get('/quiz', async (req, res) => { 
+    try {
+        const quizzes = await Quiz.find();
+        res.json(quizzes);
+    } catch (error) {
+        console.error("Error fetching all quizzes:", error);
+        res.status(500).json({ error: "Server error while fetching all quizzes" });
+    }
 });
+
+// New route to get quizzes created by the logged-in user
+app.get('/my-quizzes', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const quizzes = await Quiz.find({ createdBy: userId });
+
+        if (!quizzes || quizzes.length === 0) {
+            return res.status(404).json({ message: "No quizzes found for this user." });
+        }
+
+        res.json(quizzes);
+    } catch (error) {
+        console.error("Error fetching user's quizzes:", error);
+        res.status(500).json({ error: "Server error while fetching quizzes" });
+    }
+});
+
 
 // Add a route to get a specific quiz by ID
 app.get('/quiz/:id', async (req, res) => {

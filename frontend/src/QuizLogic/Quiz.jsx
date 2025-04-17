@@ -117,6 +117,16 @@ const QuizApp = () => {
           if (!categories || categories.length === 0) {
             throw new Error('Category is required');
         }
+          // Get token from store for authenticated request
+          const token = useAuthStore.getState().token; 
+          if (!token) {
+              console.error("User not authenticated. Cannot save quiz.");
+              // Optionally alert the user or handle differently
+              return; // Stop if no token
+          }
+          
+          // Log the token being sent
+          console.log("Attempting to save quiz with token:", token); 
 
           axios.post(`${apiUrl}/quiz`, {
             quizName: quizName,
@@ -126,6 +136,10 @@ const QuizApp = () => {
             questionCount: questionCount,
             difficulty: difficulty,
             timePerQuestion: timePerQuestion
+          }, { // Add headers for authentication
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }).then(response => {
             console.log("Quiz saved to database successfully:", response.data);
             // Update the formattedQuiz with the database ID if needed
@@ -134,7 +148,18 @@ const QuizApp = () => {
               setQuiz({...formattedQuiz});
             }
           }).catch(saveError => {
-            console.error("Error saving quiz to database:", saveError.response?.data || saveError.message);
+            // Enhanced error logging for saving quiz
+            const errorData = saveError.response?.data;
+            const status = saveError.response?.status;
+            console.error(`Error saving quiz to database (Status: ${status}):`, errorData || saveError.message);
+            if (status === 401) {
+              console.error("Authentication failed. Token might be invalid, expired, or missing.");
+              // Optionally, prompt user to log in again or handle token refresh if implemented
+              alert("Authentication failed. Please log in again to save quizzes.");
+              // navigate('/login'); // Example: redirect to login
+            } else {
+              alert("An error occurred while trying to save the quiz. You can still take the quiz, but it won't be saved to your account.");
+            }
             // Continue with the quiz even if saving fails
           });
         } catch (saveError) {
@@ -379,9 +404,11 @@ const QuizApp = () => {
                 Time Remaining: <span className="font-semibold">{remainingTime}s</span>
               </div>
             </div>
-            <p className="text-xl text-gray-800 mb-6">{currentQuestion.question}</p>
+            {/* Add check for currentQuestion before accessing its properties */}
+            <p className="text-xl text-gray-800 mb-6">{currentQuestion?.question || 'Loading question...'}</p>
             <div className="grid gap-4">
-              {currentQuestion.options.map((opt, i) => (
+              {/* Add check to ensure options is an array before mapping */}
+              {currentQuestion && Array.isArray(currentQuestion.options) ? currentQuestion.options.map((opt, i) => (
                 <button
                   key={i}
                   onClick={() => handleOptionSelect(opt)}
@@ -390,7 +417,7 @@ const QuizApp = () => {
                 >
                   {opt}
                 </button>
-              ))}
+              )) : <p>Loading options...</p>} 
             </div>
           </div>
           <div className="flex justify-end mb-6">

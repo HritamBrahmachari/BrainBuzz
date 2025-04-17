@@ -12,6 +12,7 @@ import Steps from './pages/Steps';
 import QuizApp from './QuizLogic/Quiz';
 import ScorePage from './QuizLogic/ScorePage';
 import Quizlist from './pages/Quizlist';
+import MyQuizzes from './pages/MyQuizzes'; // Import the new component
 import Logout from './components/Logout';
 
 const App = () => {
@@ -36,6 +37,7 @@ const App = () => {
                 <Route path="/quiz/:id" element={<QuizApp/>}/>
                 <Route path="/score" element={<ScorePage/>}/>
                 <Route path="/quizlist" element={<Quizlist/>}/>
+                <Route path="/my-quizzes" element={<MyQuizzes/>}/> {/* Add the new route */}
                 <Route path="/Logout" element={<Logout/>}/>
               
                

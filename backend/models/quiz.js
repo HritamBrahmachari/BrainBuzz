@@ -16,6 +16,7 @@ const quizSchema = new mongoose.Schema({
   questionCount: { type: Number, required: true },
   difficulty: { type: String, required: true },
   timePerQuestion: { type: Number, required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'brainbuzzsignup', required: true } // Reference to the User model
 });
 
 const Quiz = mongoose.model("quizlist", quizSchema);

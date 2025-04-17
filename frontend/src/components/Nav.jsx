@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 function Nav() {
     const [state, setState] = useState(false);
     const navigation = [
-        { title: "Created Quizzes", path: "/quizlist" },
-        { title: "Customers", path: "javascript:void(0)" },
+        { title: "All Quizzes", path: "/quizlist" }, // Renamed for clarity
+        { title: "My Quizzes", path: "/my-quizzes" }, // Updated link
         { title: "Pricing", path: '/pricing' },
     ]
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
