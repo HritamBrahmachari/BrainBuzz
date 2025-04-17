@@ -8,6 +8,7 @@ const Quizlist = () => {
   const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const setSelectedQuiz = useAuthStore((state) => state.setSelectedQuiz);
   const apiUrl = useAuthStore((state) => state.apiUrl);
 
@@ -38,8 +39,7 @@ const Quizlist = () => {
     <>
       <Nav />
       <section className="py-14">
-        <div className="max-w-screen-xl mx-auto px-4 text-gray-600 md:px-8">
-          <div className="relative max-w-xl mx-auto sm:text-center">
+        <div className="max-w-screen-xl mx-auto px-4 text-gray-600 md:px-8">          <div className="relative max-w-xl mx-auto sm:text-center">
             <h3 className="text-gray-800 text-3xl font-semibold sm:text-4xl">
               Available Quizzes
             </h3>
@@ -49,14 +49,37 @@ const Quizlist = () => {
               </p>
             </div>
           </div>
-
-          {loading ? (
+          
+          <div className="mt-8 max-w-md mx-auto">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search quizzes by name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-colors duration-200"
+              />
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="h-5 w-5 absolute right-3 top-3.5 text-gray-400" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>          {loading ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
             </div>
           ) : quizzes.length > 0 ? (
             <div className="mt-16 space-y-6 justify-center gap-6 sm:grid sm:grid-cols-2 sm:space-y-0 lg:grid-cols-3">
-              {quizzes.map((quiz, idx) => (
+              {quizzes
+                .filter(quiz => 
+                  quiz.quizName && quiz.quizName.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map((quiz, idx) => (
                 <div key={idx} className="relative flex-1 flex items-stretch flex-col p-8 rounded-xl border-2 hover:border-indigo-500 transition-all duration-300">
                   <div>
                     <span className="text-indigo-600 font-medium">

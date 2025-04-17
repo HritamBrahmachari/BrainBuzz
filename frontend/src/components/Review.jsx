@@ -28,7 +28,7 @@ const Review = () => {
 
     const invitecode = async () => {
         try {
-            const response = await fetch('http://localhost:5000/invitecode');
+            const response = await fetch('https://brain-buzz-nu.vercel.app/invitecode'); // ✅ Use the correct URL
             const data = await response.json();
             setInviteLink(data.inviteCode);
         } catch (error) {
