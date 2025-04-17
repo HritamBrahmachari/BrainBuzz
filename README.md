@@ -57,9 +57,11 @@
    ```bash
    npm i
    #frontend
-   Bun dev
+   bun dev
    #backend
    nodemon server.js
+   #build
+   bun run build
    ```
 
    This command will build and start both the frontend and backend services.
