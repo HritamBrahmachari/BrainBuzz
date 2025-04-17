@@ -208,6 +208,40 @@ app.get('/my-quizzes', authenticateToken, async (req, res) => {
     }
 });
 
+// Add route to delete a specific quiz by ID (only by creator)
+app.delete('/quiz/:id', authenticateToken, async (req, res) => {
+    try {
+        const quizId = req.params.id;
+        const userId = req.user.id;
+
+        // Find the quiz first to check ownership
+        const quiz = await Quiz.findById(quizId);
+
+        if (!quiz) {
+            return res.status(404).json({ error: "Quiz not found" });
+        }
+
+        // Check if the logged-in user is the creator
+        // Convert both IDs to strings for comparison to avoid ObjectId comparison issues
+        if (quiz.createdBy.toString() !== userId.toString()) {
+            return res.status(403).json({ error: "Forbidden: You are not authorized to delete this quiz" });
+        }
+
+        // If authorized, delete the quiz
+        await Quiz.findByIdAndDelete(quizId);
+
+        res.json({ message: "Quiz deleted successfully" });
+
+    } catch (error) {
+        console.error("Error deleting quiz:", error);
+        // Handle potential CastError if ID format is invalid
+        if (error.name === 'CastError') {
+             return res.status(400).json({ error: "Invalid quiz ID format" });
+        }
+        res.status(500).json({ error: "Server error while deleting quiz" });
+    }
+});
+
 
 // Add a route to get a specific quiz by ID
 app.get('/quiz/:id', async (req, res) => {

@@ -60,6 +60,41 @@ const MyQuizzes = () => {
     navigate(`/quiz/${quiz._id}`);
   };
 
+  const handleDeleteQuiz = async (quizId) => {
+    // Confirmation dialog
+    if (!window.confirm("Are you sure you want to delete this quiz? This action cannot be undone.")) {
+      return;
+    }
+
+    if (!token) {
+      setError("Authentication required to delete quizzes.");
+      return;
+    }
+
+    try {
+      setLoading(true); // Indicate activity
+      await axios.delete(`${apiUrl}/quiz/${quizId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Remove the deleted quiz from the local state
+      setQuizzes(prevQuizzes => prevQuizzes.filter(q => q._id !== quizId));
+      setError(null); // Clear any previous errors
+      alert("Quiz deleted successfully!");
+
+    } catch (err) {
+      console.error("Error deleting quiz:", err);
+      const errorMsg = err.response?.data?.error || "An error occurred while deleting the quiz.";
+      setError(errorMsg);
+      alert(`Error: ${errorMsg}`); // Show error to user
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   return (
     <>
       <Nav />
@@ -148,12 +183,20 @@ const MyQuizzes = () => {
                     </div>
                   </div>
 
-                  <div className="flex-1 flex items-end">
+                  <div className="flex-1 flex items-end gap-4">
                     <button
                       onClick={() => handleTakeQuiz(quiz)}
                       className="px-3 py-3 rounded-lg w-full font-semibold text-sm duration-150 text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700"
                     >
                       Take Quiz
+                    </button>
+                    {/* Add Delete Button */}
+                    <button
+                      onClick={() => handleDeleteQuiz(quiz._id)}
+                      className="mt-2 px-3 py-3 rounded-lg w-full font-semibold text-sm duration-150 text-white bg-red-600 hover:bg-red-500 active:bg-red-700"
+                      disabled={loading} // Disable button while loading
+                    >
+                      Delete Quiz
                     </button>
                   </div>
                 </div>
