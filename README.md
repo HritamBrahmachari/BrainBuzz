@@ -56,9 +56,9 @@
 
    ```bash
    npm i
-   //frontend
+   #frontend
    Bun dev
-   //backend
+   #backend
    nodemon server.js
    ```
 
